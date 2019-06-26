@@ -17,29 +17,39 @@ signedGradients = True
 
 hog = cv2.HOGDescriptor(winSize,blockSize,blockStride,cellSize,nbins,derivAperture,winSigma,histogramNormType,L2HysThreshold,gammaCorrection,nlevels,signedGradients)
 
+# classificador notebook
+#clf_note = cv2.CascadeClassifier('/home/matheus/github/diversos/obj_detect/haarcasdade/cascade_notebook.xml')
+
 def hoggify(x,z):
     # Criando array vazio
     data=[]
+    label = []
     # Laço para percorrer cada imagem do diretório
-    for i in range(1,int(z)):
-        # Imagem do diretório
-        image = cv2.imread("/home/matheus/github/diversos/obj_detect/images/"+x+"/"+str(i)+".jpg", 0)
-        # Se o diretorio for das imagens positivas a dimensão recebe 20
-        if x == "positiva":
-            dim = 20
-        # Caso for negativa a dimensão recebe 100
-        elif x == "negativa":
-            dim = 100
-        # Fazendo o redimensionamento da imagem
-        img = cv2.resize(image, (dim,dim), interpolation = cv2.INTER_AREA)
-        # Calculando os descritores HOG
-        img = hog.compute(img)
-        # Removendo entradas unidimensionais
-        img = np.squeeze(img)
-        # Adicionando img tratada
-        data.append(img)
-        print(img.shape)
-    return data
+    for j in range(0,3):
+        for i in range(1,int(z)):
+            # Imagem do diretório
+            image = cv2.imread("/home/matheus/github/diversos/obj_detect/images/"+str(j)+"/"+str(i)+".jpg", 0)
+            #print(image.shape)
+            # Se o diretorio for das imagens positivas a dimensão recebe 20
+            if x == "positiva":
+                dim = 20
+            # Caso for negativa a dimensão recebe 100
+            elif x == "negativa":
+                dim = 100
+            # Fazendo o redimensionamento da imagem
+            img = cv2.resize(image, (dim,dim), interpolation = cv2.INTER_AREA)
+            #print(img.shape)
+            # Calculando os descritores HOG
+            img = hog.compute(img)
+            #print(img.shape)
+            # Removendo entradas unidimensionais
+            img = np.squeeze(img)
+            #print(img.shape)
+            # Adicionando img tratada
+            data.append(img)
+            label.append(j)
+            #print(img.shape)
+    return data,label
 
 
 def svmClassify(features,labels):
@@ -57,11 +67,12 @@ def list_to_matrix(lst):
 def train():
     # Variável de controle
     x = 'positiva'
-    y = 19
-    # Labels temporarios: Apenas para teste
-    labels = np.array([1,1,1,1,1,1,0,0,0,0,0,0,2,2,2,2,2,2])
+    y = 11
     # função para retornar lista de imagens com os descritores HOG
-    lst = hoggify(x,y)
+    lst,labels = hoggify(x,y)
+    #print(label)
+    # Converter lista python em array numpy
+    labels = np.array(labels)
     # Convertendo a lista HOG em matriz numpy
     data = list_to_matrix(lst)
     # Fazendo o treinamento do modelo
@@ -96,16 +107,20 @@ def webcam():
         (rects, weights) = hog.detectMultiScale(gray, winStride=(4, 4),padding=(8, 8))
         print(rect)
         """
-        # Predição da imagem na tela
+        # Predição da imageqm na tela
         pred = clf.predict(features)
         # Caso a imagem for da classe 1 então:
         if pred == 1:
+            font = cv2.FONT_HERSHEY_SIMPLEX
+            cv2.putText(frame,'Notebook',(200,200), font, 1,(0,255,255))
             # Imprime que o objeto na tela é da classe 1
             print("No vídeo tem um notebook!")
-            #for (x,y,l,a) in rects:
+            #for (x,y,l,a) in deteccoes:
                 #cv2.rectangle(frame, (x,y), (x + l, y + a), (0,255,0),2)
         elif pred == 2:
             print("No vídeo tem um celular!")
+        elif pred == 3:
+            print("pincel")
         # Mostrando saida na imagem de vídeo
         cv2.imshow("Video",frame)
         # Caso pressione a tecla q é desligado o teste com um delay de 25ms.
