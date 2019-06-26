@@ -1,3 +1,5 @@
+# coding: utf-8
+
 from sklearn.svm import SVC
 import cv2
 import numpy as np
@@ -28,7 +30,7 @@ def hoggify(x,z):
     for j in range(0,3):
         for i in range(1,int(z)):
             # Imagem do diretório
-            image = cv2.imread("/home/matheus/github/diversos/obj_detect/images/"+str(j)+"/"+str(i)+".jpg", 0)
+            image = cv2.imread("../images/"+str(j)+"/"+str(i)+".jpg", 0)
             #print(image.shape)
             # Se o diretorio for das imagens positivas a dimensão recebe 20
             if x == "positiva":
@@ -55,14 +57,14 @@ def hoggify(x,z):
 def svmClassify(features,labels):
     # Treinando o modelo SVM com kernel polinomial
     clf=SVC(C=10000,kernel="poly",gamma=0.000001)
-    
+
     clf.fit(features,labels)
 
     return clf
 
 def list_to_matrix(lst):
     # Transforma lista em matriz numpy
-    return np.stack(lst) 
+    return np.stack(lst)
 
 def train():
     # Variável de controle
@@ -89,7 +91,7 @@ def webcam():
         ret, frame = cap.read()
 
         # Mostrar a imagem da webcam
-        cv2.imshow('Webcam', frame)
+        #cv2.imshow('Webcam', frame)
 
         # Converter a escala da imagem para cinza
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -130,3 +132,6 @@ def webcam():
     cap.release() # Release the camera resource
     cv2.destroyAllWindows() # Close the image window
 
+
+if __name__ == '__main__':
+    webcam()
