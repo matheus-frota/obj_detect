@@ -30,7 +30,7 @@ def hoggify(x,z):
     for j in range(0,3):
         for i in range(1,int(z)):
             # Imagem do diretório
-            image = cv2.imread("../images/"+str(j)+"/"+str(i)+".jpg", 0)
+            image = cv2.imread("./images/"+str(j)+"/"+str(i)+".jpg", 0)
             #print(image.shape)
             # Se o diretorio for das imagens positivas a dimensão recebe 20
             if x == "positiva":
